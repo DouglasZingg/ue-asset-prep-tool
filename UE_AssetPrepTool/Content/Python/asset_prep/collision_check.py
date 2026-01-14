@@ -83,6 +83,13 @@ def check_static_mesh_collision(asset_path: str, out_json_path: str) -> None:
             result["collision_count"] = int(count)
             result["has_collision"] = (count > 0)
 
+            # Write results onto the asset as metadata tags (Blueprint can read this)
+            try:
+                unreal.EditorAssetLibrary.set_metadata_tag(asset, "AssetPrep_CollisionCount", str(int(count)))
+                unreal.EditorAssetLibrary.set_metadata_tag(asset, "AssetPrep_HasCollision", "1" if count > 0 else "0")
+            except Exception as meta_err:
+                unreal.log_warning(f"[AssetPrep] Metadata write failed for {asset_path}: {meta_err}")
+
     except Exception as e:
         result["error"] = str(e)
 
